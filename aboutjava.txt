@@ -1,2 +1,0 @@
-java is oops based concept.
-java is developed by james gosling
