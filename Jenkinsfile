@@ -1,45 +1,27 @@
 pipeline {
-         agent any
-         stages {
-                 stage('One') {
-                 steps {
-                     echo 'Hi, this is Zulaikha from edureka'
-                 }
-                 }
-                 stage('Two') {
-                 steps {
-                    input('Do you want to proceed?')
-                 }
-                 }
-                 stage('Three') {
-                 when {
-                       not {
-                            branch "master"
-                       }
-                 }
-                 steps {
-                       echo "Hello"
-                 }
-                 }
-                 stage('Four') {
-                 parallel { 
-                            stage('Unit Test') {
-                           steps {
-                                echo "Running the unit test..."
-                           }
-                           }
-                            stage('Integration test') {
-                              agent {
-                                    docker {
-                                            reuseNode true
-                                            image 'ubuntu'
-                                           }
-                                    }
-                              steps {
-                                echo "Running the integration test..."
-                              }
-                           }
-                           }
-                           }
-              }
+    agent any
+    stages {
+        stage('git repo & clean') {
+            steps {
+               bat "rmdir  /s /q gitpjt"
+                bat "git clone https://github.com/ganeshrajnokia/gitpjt.git"
+                bat "mvn clean -f gitpjt"
+            }
+        }
+        stage('install') {
+            steps {
+                bat "mvn install -f gitpjt"
+            }
+        }
+        stage('test') {
+            steps {
+                bat "mvn test -f gitpjt"
+            }
+        }
+        stage('package') {
+            steps {
+                bat "mvn package -f gitpjt"
+            }
+        }
+    }
 }
